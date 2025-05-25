@@ -10,7 +10,7 @@ taskRouter.get('/get-all', validateJwt, tasksController.getAll);
 // @ts-ignore
 taskRouter.get('/get-by-id/:id', validateJwt, tasksController.getById);
 // @ts-ignore
-taskRouter.put('/update/:id', validateJwt, tasksController.update);
+taskRouter.put('/update', validateJwt, tasksController.update);
 // @ts-ignore
 taskRouter.delete('/delete/:id', validateJwt, tasksController.delete);
 
