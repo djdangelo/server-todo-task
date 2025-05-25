@@ -1,7 +1,7 @@
 import cors from 'cors';
 
 const allowedOrigins = [
-    'http://localhost:4600',
+    'http://localhost:4200',
     'https://task-prod.hn',// cmabiar con prod
 ];
 

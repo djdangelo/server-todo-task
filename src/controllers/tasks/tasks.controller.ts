@@ -1,5 +1,5 @@
 import {Response, Request} from "express";
-import {db} from '../../config/firebase/firebase.config';
+import {db, admin} from '../../config/firebase/firebase.config';
 import {IResponseApi} from "../../interfaces/response-api/response-api.interface";
 import responseMessagesShared from "../../shared/response-messages/response-messages.shared";
 import {ITask} from "../../interfaces/task/task.interface";
@@ -10,6 +10,8 @@ const taskController = {
     async create(req: Request, res: Response): Promise<Response<IResponseApi>> {
         try {
             const data: ITask = req.body as ITask;
+            // @ts-ignore
+            data.createdAt = admin.firestore.Timestamp.fromDate(new Date());
             await tasksCollection.add(data);
             return responseMessagesShared.successProcess(res,'Task created successfully', []);
         } catch (e) {
