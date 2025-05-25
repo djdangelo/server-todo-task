@@ -1,0 +1,91 @@
+import {Response, Request} from "express";
+import {db} from '../../config/firebase/firebase.config';
+import {IResponseApi} from "../../interfaces/response-api/response-api.interface";
+import responseMessagesShared from "../../shared/response-messages/response-messages.shared";
+import {ITask} from "../../interfaces/task/task.interface";
+
+const tasksCollection = db.collection('tasks');
+
+const taskController = {
+    async create(req: Request, res: Response): Promise<Response<IResponseApi>> {
+        try {
+            const data: ITask = req.body as ITask;
+            await tasksCollection.add(data);
+            return responseMessagesShared.successProcess(res,'Task created successfully', []);
+        } catch (e) {
+            console.error(e);
+            return responseMessagesShared.errorRequest(e, 'Create-Task', res);
+        }
+    },
+    async update(req: Request, res: Response): Promise<Response<IResponseApi>> {
+        try {
+            const data: ITask = req.body as ITask;
+            const dataUpdate = await tasksCollection.doc(data.id || '').get();
+            if (!dataUpdate) {
+                return responseMessagesShared.badRequest(res, 'Task update failed.', []);
+            }
+            // @ts-ignore
+            await tasksCollection.doc(data.id || '').update(data);
+            return responseMessagesShared.successProcess(res, 'User updated successfully.', []);
+        } catch (e) {
+            console.error(e);
+            return responseMessagesShared.errorRequest(e, 'Create-Task', res);
+        }
+    },
+    async delete(req: Request, res: Response): Promise<Response<IResponseApi>> {
+        try {
+            const { id } = req.params;
+            const dataDelete = await tasksCollection.doc(id).get();
+            if (!dataDelete) {
+                return responseMessagesShared.badRequest(res, 'Task delete failed.', []);
+            }
+            await tasksCollection.doc(id).delete();
+            return responseMessagesShared.successProcess(res, 'Task deleted successfully.', []);
+        } catch (e) {
+            console.error(e);
+            return responseMessagesShared.errorRequest(e, 'Create-Task', res);
+        }
+    },
+    async getAll(req: Request, res: Response): Promise<Response<IResponseApi>> {
+        try {
+            const { limit = 10, pageToken } = req.query;
+            let query = tasksCollection.orderBy('createdAt', 'desc').limit(parseInt(String(limit)));
+            if (pageToken) {
+                const lastDoc = await tasksCollection.doc(String(pageToken)).get();
+                if (lastDoc.exists) {
+                    query = query.startAfter(lastDoc);
+                }
+            }
+            const listData = await query.get();
+            const tasks: ITask[] = listData.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data() as ITask,
+            }));
+            const lastVisible = listData.docs[listData.docs.length - 1];
+            const nextPage = lastVisible ? lastVisible.id : null;
+            return responseMessagesShared.successProcess(res, 'Task list', { tasks, nextPage });
+        } catch (e) {
+            console.error(e);
+            return responseMessagesShared.errorRequest(e, 'Create-Task', res);
+        }
+    },
+    async getById(req: Request, res: Response): Promise<Response<IResponseApi>> {
+        try {
+            const { id } = req.params;
+            const data = await tasksCollection.doc(id).get();
+            if (!data) {
+                return responseMessagesShared.badRequest(res, 'Task not found.', []);
+            }
+            const task: ITask = {
+                id: data.id,
+                ...data.data() as ITask
+            };
+            return responseMessagesShared.successProcess(res, 'Task found', task);
+        } catch (e) {
+            console.error(e);
+            return responseMessagesShared.errorRequest(e, 'Create-Task', res);
+        }
+    }
+};
+
+export default taskController;
