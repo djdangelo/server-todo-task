@@ -22,6 +22,8 @@ const taskController = {
     async update(req: Request, res: Response): Promise<Response<IResponseApi>> {
         try {
             const data: ITask = req.body as ITask;
+            // @ts-ignore
+            data.createdAt = admin.firestore.Timestamp.fromDate(new Date(data.createdAt))
             const dataUpdate = await tasksCollection.doc(data.id || '').get();
             if (!dataUpdate) {
                 return responseMessagesShared.badRequest(res, 'Task update failed.', []);
@@ -52,6 +54,7 @@ const taskController = {
         try {
             const { limit = 10, pageToken } = req.query;
             let query = tasksCollection.orderBy('createdAt', 'desc').limit(parseInt(String(limit)));
+            const size = await tasksCollection.count().get();
             if (pageToken) {
                 const lastDoc = await tasksCollection.doc(String(pageToken)).get();
                 if (lastDoc.exists) {
@@ -59,13 +62,18 @@ const taskController = {
                 }
             }
             const listData = await query.get();
-            const tasks: ITask[] = listData.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data() as ITask,
-            }));
+            const tasks: ITask[] = listData.docs.map(doc => {
+                const data = doc.data();
+                const createdAt = (data.createdAt as FirebaseFirestore.Timestamp)?.toDate?.() ?? null;
+                return {
+                    id: doc.id,
+                    ...data,
+                    createdAt
+                } as unknown as ITask;
+            });
             const lastVisible = listData.docs[listData.docs.length - 1];
             const nextPage = lastVisible ? lastVisible.id : null;
-            return responseMessagesShared.successProcess(res, 'Task list', { tasks, nextPage });
+            return responseMessagesShared.successProcess(res, 'Task list', { tasks, nextPage, size: size.data().count });
         } catch (e) {
             console.error(e);
             return responseMessagesShared.errorRequest(e, 'Create-Task', res);
@@ -78,9 +86,14 @@ const taskController = {
             if (!data) {
                 return responseMessagesShared.badRequest(res, 'Task not found.', []);
             }
+            const dataTask = data.data();
+            // @ts-ignore
+            const createdAt = (dataTask.createdAt as FirebaseFirestore.Timestamp)?.toDate?.() ?? null;
             const task: ITask = {
                 id: data.id,
-                ...data.data() as ITask
+                ...dataTask,
+                // @ts-ignore
+                createdAt,
             };
             return responseMessagesShared.successProcess(res, 'Task found', task);
         } catch (e) {

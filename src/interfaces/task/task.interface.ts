@@ -3,5 +3,5 @@ export interface ITask {
     title: string;
     description: string;
     createdAt: string;
-    status: string;
+    status: boolean;
 }
