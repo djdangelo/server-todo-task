@@ -53,5 +53,13 @@ IMPORTANTE: En la linea 3 del archivo `src/config/firebase/firebase.config.ts` p
 email: admin@todotask.com
 IMPORTANTE: con esta credencial se accede a la app en prod.
 
+## DATO DE IMPORTANCIA
+1. El servidor que estoy usando para alojar la api, es un servidor gratuito por lo tanto se apaga cada cierto tiempo que el mismo no es usado.
+2. Para que la app web de angular al momento de iniciar sesion, hay que esperar uns segundos hasta que el servicor vuelve a responder.
+3. Podemos enviar la solicitud (Clikear 2 veces el boton de iniciar sesion) hasta que responde la api.
+4. Tengo desplegada en un servidor privado la api pero desde firebase hostin no permite hacer peticiones HTTP
+5. Les dejo la direccion para que puedan ejecutar en local la app de Angular y puedan hacer pruebas si asi lo requieren, dir: `http://129.213.57.94:3600/api-todo-task`
+6. La direccion que les brinde la pueden agregar en la variable global de mi app en Angular la cual se encuentra en `src/app/data/contants/global.variable.constant.ts`, variable : `apiUrl`
+
 
 
