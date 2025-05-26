@@ -2,7 +2,7 @@ import cors from 'cors';
 
 const allowedOrigins = [
     'http://localhost:4200',
-    'https://task-prod.hn',// cmabiar con prod
+    'https://todo-task-824ef.web.app',// cmabiar con prod
 ];
 
 const corsOptions: cors.CorsOptions = {
