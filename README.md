@@ -19,6 +19,7 @@ Esta aplicacion fue desarrollada con NodeJS en su version 20.xx y Typescript. A 
 2. Debes configurar el ambiente de desarrollo en la consola de Firebase.
 3. Al tener configurado el proyecto en Firebase, debes de descargar las credenciales de autentificacion.
 4. Se descargara un archivo de tipo `json` el cual debes de nombrar `firebase-admin-cert.json` y guardarlo en la carpeta `src/config/` del proyecto.
+IMPORTANTE: En la linea 3 del archivo `src/config/firebase/firebase.config.ts` por `import serviceFirebase from '../firebase-admin-cert.json';`
 
 
 ## Comando para ejecutar el proyecto
