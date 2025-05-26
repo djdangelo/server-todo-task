@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 // @ts-ignore
-import serviceFirebase from '../firebase-admin-cert.json';
+import serviceFirebase from '/etc/secrets/firebase-admin-cert.json';
 
 
 if (!admin.apps.length) {
