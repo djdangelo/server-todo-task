@@ -48,5 +48,10 @@ IMPORTANTE: En la linea 3 del archivo `src/config/firebase/firebase.config.ts` p
 
 `shared`: almacena funciones de uso compartido
 
+## Credenciales de acceso para pruebas
+
+email: admin@todotask.com
+IMPORTANTE: con esta credencial se accede a la app en prod.
+
 
 
